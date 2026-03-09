@@ -1,11 +1,21 @@
-# CLAUDE.md
+# KeepitMenuBar
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+A macOS menubar app that gives [Keepit](http://www.keepit.com) customers an at-a-glance view of their backup connector health in a single region.
 
 ** Note that this isn't an official product of Keepit A/S, and it's not guaranteed to work. It might steal your
 wallet, kiss you on the ear, or run off with your dog. **
 
-## Project Overview
+## Features
+
+- **Connector health monitoring** — see healthy/unhealthy/critical status for all connectors with color-coded indicators
+- **Last backup time** — hover over any connector to see when its last backup completed
+- **Anomaly detection** — connectors with anomalies in the last 7 days are flagged with a warning indicator
+- **Configurable refresh** — poll every 1–60 minutes (default 5)
+- **Unhealthy filter** — toggle to show only connectors that need attention
+- **Quick access** — click any connector to open the Keepit web console
+- **Secure credentials** — stored in the macOS Keychain
+
+## How it works
 
 **mb-monitor** is a macOS menubar extension that gives Keepit customers an easy way to see the state and 
 status of their Keepit backups in a single region. Once you sign in, it polls connector state at a defined interval and 
@@ -52,9 +62,10 @@ MBMonitor.swiftpm/Sources/
 
 ## Keepit API
 
-- API docs: `~/source/keepit/apiendpoints/api-endpoints.md`
-- All responses are XML with versioned Accept headers (e.g. `application/vnd.keepit.v4+xml`)
-- Auth: HTTP Basic with base64-encoded `username:password`
+- API docs: These aren't publicly available yet, but will be soon.
 - Base URLs: `https://{region}.keepit.com` (e.g. `ws.keepit`, `us-dc`, `dk-co`)
 - Key endpoints used: `/users/`, `/users/{id}/devices`, `/users/{id}/devices/{id}/health`
-- VPN to `gitlab.off.keepit.com` required for git push/pull
+
+## License
+
+MIT
