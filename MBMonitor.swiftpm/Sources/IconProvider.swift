@@ -3,9 +3,30 @@ import AppKit
 /// Loads connector icons and provides the menubar template image.
 enum IconProvider {
     /// Returns an NSImage for the given connector type.
-    /// Falls back to an SF Symbol.
+    /// Loads the SVG from Resources/icons/ if available, falls back to an SF Symbol.
     static func icon(for type: ConnectorType, size: CGFloat = 20) -> NSImage? {
-        NSImage(systemSymbolName: type.icon, accessibilityDescription: type.displayName)
+        if let svgName = svgFilename(for: type),
+           let url = Bundle.module.url(forResource: svgName, withExtension: "svg", subdirectory: "Resources/icons"),
+           let image = NSImage(contentsOf: url) {
+            image.size = NSSize(width: size, height: size)
+            return image
+        }
+        return NSImage(systemSymbolName: type.icon, accessibilityDescription: type.displayName)
+    }
+
+    /// Maps connector types to their SVG filenames (without extension) in Resources/icons/.
+    private static func svgFilename(for type: ConnectorType) -> String? {
+        switch type {
+        case .m365: return "o365-admin"
+        case .dynamics365: return "dynamics"
+        case .salesforce: return "sforce"
+        case .google: return "Google"
+        case .powerBI: return "power-bi"
+        case .zendesk: return "zendesk"
+        case .azureDevOps: return "azure-do"
+        case .entraID: return "azure-ad"
+        case .exchange, .sharePoint, .oneDrive, .teams, .unknown: return nil
+        }
     }
 
     /// Returns the Keepit logo as a menubar template image, drawn as a bezier path.
