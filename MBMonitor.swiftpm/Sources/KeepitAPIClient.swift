@@ -89,6 +89,29 @@ final class KeepitAPIClient: @unchecked Sendable {
         )
     }
 
+    // MARK: - SSE / vqueues
+
+    /// Build an authenticated URLRequest for the vqueues multiqueue SSE endpoint.
+    func vqueueRequest(sources: [String]) throws -> URLRequest {
+        guard let baseURL, let authHeader else { throw APIError.notConfigured }
+        let joined = sources.joined(separator: ",")
+        guard let url = URL(string: "/vqueues/multiqueue?sources=\(joined)", relativeTo: baseURL) else {
+            throw APIError.invalidResponse
+        }
+        var req = URLRequest(url: url)
+        req.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+        req.setValue(authHeader, forHTTPHeaderField: "Authorization")
+        // No timeout for SSE — connection stays open indefinitely
+        req.timeoutInterval = 0
+        return req
+    }
+
+    /// The SSE queue sources to subscribe to for real-time connector updates.
+    func vqueueSources() throws -> [String] {
+        guard let userId else { throw APIError.notAuthenticated }
+        return ["devices-\(userId)", "job-\(userId)"]
+    }
+
     // MARK: - Private
 
     private func request(path: String, accept: String, method: String = "GET") async throws -> Data {
